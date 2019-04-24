@@ -2,12 +2,16 @@ import java.util.*;
 public class aiTicTacToe {
 	public final int NEGATIVE_INFINITY = Integer.MIN_VALUE;
 	public final int INFINITY = Integer.MAX_VALUE;
-    public class tttTree{
-    	private tttTree parent;
+    public class TttTree{
+    	private TttTree parent;
     	public List<positionTicTacToe> view;
     	public positionTicTacToe pos;
-    	public List<tttTree> children;
+    	public List<TttTree> children;
     	public int value;
+
+		public TttTree(List<positionTicTacToe> view) {
+			this.view = view;
+		}
 	}
 
 
@@ -24,6 +28,8 @@ public class aiTicTacToe {
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
 		List<positionTicTacToe> copied = deepCopyATicTacToeBoard(board);
+		List<List<positionTicTacToe>> predictedMoves = guessMoves(board);
+
 
 		do
 			{
@@ -51,6 +57,7 @@ public class aiTicTacToe {
 
 	// produce a sequence of possible results from already known board
 	public List<List<positionTicTacToe>> guessMoves(List<positionTicTacToe> board){
+		// TODO: Add Criterion here to compute huristic value
 		List<List<positionTicTacToe>> moves = new ArrayList<>();
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
@@ -69,19 +76,32 @@ public class aiTicTacToe {
 		return moves;
 	}
 
-	public int miniMaxEach(tttTree node, int depth, boolean maximizer){
+	public int miniMaxEach(TttTree node, int depth, boolean maximizer){
 		if (depth == 0 || node.children == null)
 			return node.value;
+
+		// init tree for next level
+		List<TttTree> children = new ArrayList<>();
 		int value;
+		List<List<positionTicTacToe>> moves = guessMoves(node.view);
+		for (List<positionTicTacToe> each : moves){
+			TttTree temp = new TttTree(each);
+			temp.parent = node;
+			children.add(temp);
+		}
+		// update children nodes
+		node.children = children;
+
+		// minmax algorithm goes
 		if (maximizer){
 			value = NEGATIVE_INFINITY;
-			for (tttTree each : node.children){
+			for (TttTree each : node.children){
 				value = value > miniMaxEach(each, depth - 1, false)? value : miniMaxEach(each, depth - 1, false);
 			}
 			return value;
 		}else {
 			value = INFINITY;
-			for (tttTree each : node.children){
+			for (TttTree each : node.children){
 				value = value > miniMaxEach(each, depth - 1, false)? value : miniMaxEach(each, depth - 1, true);
 			}
 			return value;
