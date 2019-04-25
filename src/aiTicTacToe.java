@@ -342,7 +342,8 @@ public class aiTicTacToe {
 			int index = move.x * 16 + move.y * 4 + move.z;
 			board.get(index).state = player;
 			List<positionTicTacToe> copied = deepCopyATicTacToeBoard(board);
-			int curValue = miniMaxEach(copied, 2, true );
+			int curValue = miniMaxEach(copied, 1, false );
+//			int curValue = alphaBeta(copied, 3, NEGATIVE_INFINITY, INFINITY, false);
 			curValue = curValue > NEGATIVE_INFINITY ? curValue : NEGATIVE_INFINITY;
 			if (curValue > hurValueMax){
 				hurValueMax = curValue;
@@ -435,9 +436,7 @@ public class aiTicTacToe {
 
 		if (depth == 0 || children.size() == 0) {
 			int curScore = getCurBoardScore(tempBoard, player);
-//			printBoardTicTacToe(tempBoard);
 			int opponent_score= getCurBoardScore(tempBoard, opponent);
-//			System.out.println(opponent_score);
 			if (opponent_score == INFINITY)
 				curScore = NEGATIVE_INFINITY;
 			else if (curScore == INFINITY)
@@ -448,19 +447,7 @@ public class aiTicTacToe {
 		for (positionTicTacToe child : children){
 			int index = child.x * 16 + child.y * 4 + child.z;
 			tempBoard.get(index).state = thinker;
-//			int curScore = getCurBoardScore(tempBoard, player);
-////			tempBoard.get(index).state = opponent;
-//			int opponent_score= getCurBoardScore(tempBoard, opponent);
-//			if (opponent_score == INFINITY)
-//				curScore = NEGATIVE_INFINITY;
-//			else if (curScore == INFINITY)
-//				curScore = INFINITY;
-//			else curScore -= opponent_score;
 
-//
-//			if (thinker != player){
-//				tempBoard.get(index).state = opponent;
-//			}
 
 			if (maximizer){
 			    int hurValue = miniMaxEach(tempBoard, depth - 1, false);
@@ -470,6 +457,57 @@ public class aiTicTacToe {
 			}else {
 			    int hurValue = miniMaxEach(tempBoard, depth - 1, true);
 				hurValueMax = Math.min(hurValueMax, hurValue);
+//				String playerN = (maximizer? "player " : "opponent ") + "hurValue: " + hurValue + "position:" + child.x + "," + child.y + "," + child.z;
+//				System.out.println(playerN);
+			}
+			tempBoard.get(index).state = 0;
+		}
+
+		return hurValueMax;
+	}
+
+	public int alphaBeta(List<positionTicTacToe> board, int depth, int alpha, int beta, boolean maximizer){
+		List<positionTicTacToe> children = guessMoves(board);
+		List<positionTicTacToe> tempBoard =  deepCopyATicTacToeBoard(board);
+		int hurValueMax = maximizer ? NEGATIVE_INFINITY : INFINITY ;
+		int opponent = player == 1 ? 2 : 1;
+		int thinker = maximizer ? player : opponent;
+
+
+		if (depth == 0 || children.size() == 0) {
+			int curScore = getCurBoardScore(tempBoard, player);
+			int opponent_score= getCurBoardScore(tempBoard, opponent);
+			if (opponent_score == INFINITY)
+				curScore = NEGATIVE_INFINITY;
+			else if (curScore == INFINITY)
+				curScore = INFINITY;
+			else curScore -= opponent_score;
+			return curScore;
+		}
+		for (positionTicTacToe child : children){
+			int index = child.x * 16 + child.y * 4 + child.z;
+			tempBoard.get(index).state = thinker;
+
+
+			if (maximizer){
+			    int hurValue = alphaBeta(tempBoard, depth - 1, alpha, beta, false);
+				hurValueMax = Math.max(hurValueMax, hurValue);
+				alpha = Math.max(alpha, hurValue);
+				if (alpha >= beta){
+					tempBoard.get(index).state = 0;
+					break;
+				}
+
+//				String playerN = (maximizer? "player " : "opponent ") + "hurValue: " + hurValue + "position:" + child.x + "," + child.y + "," + child.z;
+//				System.out.println(playerN);
+			}else {
+			    int hurValue = alphaBeta(tempBoard, depth - 1, alpha, beta, true);
+				hurValueMax = Math.min(hurValueMax, hurValue);
+				beta = Math.min(beta, hurValueMax);
+				if (alpha >= beta){
+					tempBoard.get(index).state = 0;
+					break;
+				}
 //				String playerN = (maximizer? "player " : "opponent ") + "hurValue: " + hurValue + "position:" + child.x + "," + child.y + "," + child.z;
 //				System.out.println(playerN);
 			}
