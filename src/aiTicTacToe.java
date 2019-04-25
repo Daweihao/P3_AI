@@ -334,7 +334,8 @@ public class aiTicTacToe {
 	{
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
-
+		int alpha = NEGATIVE_INFINITY;
+		int beta = INFINITY;
 		List<positionTicTacToe> predictedMoves = guessMoves(board);
 		int hurValueMax = NEGATIVE_INFINITY;
 
@@ -342,12 +343,17 @@ public class aiTicTacToe {
 			int index = move.x * 16 + move.y * 4 + move.z;
 			board.get(index).state = player;
 			List<positionTicTacToe> copied = deepCopyATicTacToeBoard(board);
-			int curValue = miniMaxEach(copied, 1, false );
-//			int curValue = alphaBeta(copied, 3, NEGATIVE_INFINITY, INFINITY, false);
+//			int curValue = miniMaxEach(copied, 3, false );
+			int curValue = alphaBeta(copied, 3, alpha, beta, false);
 			curValue = curValue > NEGATIVE_INFINITY ? curValue : NEGATIVE_INFINITY;
 			if (curValue > hurValueMax){
 				hurValueMax = curValue;
 				myNextMove = move;
+			}
+			alpha = Math.max(alpha, hurValueMax);
+			if (alpha >= beta){
+				board.get(index).state = 0;
+				break;
 			}
 			board.get(index).state = 0;
 		}
