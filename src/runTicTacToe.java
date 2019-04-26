@@ -5,7 +5,7 @@ public class runTicTacToe {
 	
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
-	private aiTicTacToe ai1;
+	private aiTicTacToe3 ai1;
 //	private aiTicTacToe ai2;
 	private aiTicTacToe1 ai2;
 	
@@ -18,7 +18,7 @@ public class runTicTacToe {
 		board = createTicTacToeBoard();
 		
 		//initialize AI players
-		ai1 = new aiTicTacToe(1);
+		ai1 = new aiTicTacToe3(1);
 		ai2 = new aiTicTacToe1(2);
 	}
 	private List<positionTicTacToe> createTicTacToeBoard()
@@ -216,10 +216,10 @@ public class runTicTacToe {
 				p3.state = state3;
 				
 				//print the satisified winning line (one of them if there are several)
-				p0.printPosition();
-				p1.printPosition();
-				p2.printPosition();
-				p3.printPosition();
+				// p0.printPosition();
+				// p1.printPosition();
+				// p2.printPosition();
+				// p3.printPosition();
 				return state0;
 			}
 		}
@@ -317,7 +317,7 @@ public class runTicTacToe {
 		}
 		return false;
 	}
-	public void run()
+	public int run()
 	{
 
 		Random rand = new Random();
@@ -334,6 +334,7 @@ public class runTicTacToe {
 			else if(turn==2)
 			{
 				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2); //2 stands for player 2
+				// positionTicTacToe player2NextMove = ai2.randomAlgorithm(board, 2); // random choice
 				if(makeMove(player2NextMove,2,board))
 					turn = 1;
 			}
@@ -353,7 +354,7 @@ public class runTicTacToe {
 		}
 		else if(result==2)
 		{
-			//game ends, player 1 wins 
+			//game ends, player 2 wins 
 			System.out.println("Player2 Wins");
 			printBoardTicTacToe(board);
 		}
@@ -368,6 +369,7 @@ public class runTicTacToe {
 			//exception occurs, stop
 			System.out.println("Error!");
 		}
+		return result;
 		
 	}
 	
@@ -378,8 +380,29 @@ public class runTicTacToe {
 	public static void main(String[] args) {		
 
 		//run game loop
-		runTicTacToe rttt = new runTicTacToe();
-		rttt.run();
+		int wins = 0;
+		int draws = 0;
+		long begin = System.currentTimeMillis();
+		// for (int i = 0; i < 100; i++) {
+			runTicTacToe rttt = new runTicTacToe();
+			int temp = rttt.run();
+			// switch (temp) {
+			// 	case 1:
+			// 		wins++;
+			// 		break;
+			// 	case -1:
+			// 		draws++;
+			// 		break;
+			// 	default:
+			// 		break;
+			// }
+		// }
+		
+		long tail = System.currentTimeMillis() - begin;
+		System.out.println("Use time :" + tail/1000.0);
+		// System.out.println("Wins: " + wins);
+		// System.out.println("Draws: " + draws);
+
 	}
 }
 

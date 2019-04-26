@@ -1,18 +1,10 @@
 import java.util.*;
+
 public class aiTicTacToe {
 	public final int NEGATIVE_INFINITY = Integer.MIN_VALUE;
 	public final int INFINITY = Integer.MAX_VALUE;
-    public class TttTree{
-    	public List<positionTicTacToe> view;
-    	public positionTicTacToe pos;
-    	public List<TttTree> children;
-    	public int value;
-
-		public TttTree(positionTicTacToe pos) {
-			this.pos = pos;
-		}
-	}
-
+	public int DEPTH = 2; 
+    
 	public int getStateOfPostionByCoordinate(int x, int y, int z, List<positionTicTacToe> board) {
 		int index = x * 16 + y * 4 + z;
 		return board.get(index).state;
@@ -332,11 +324,13 @@ public class aiTicTacToe {
 	}
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player)
 	{
+		long start = System.currentTimeMillis();
 		//TODO: this is where you are going to implement your AI algorithm to win the game. The default is an AI randomly choose any available move.
 		positionTicTacToe myNextMove = new positionTicTacToe(0,0,0);
 		int alpha = NEGATIVE_INFINITY;
 		int beta = INFINITY;
 		List<positionTicTacToe> predictedMoves = guessMoves(board);
+		
 		int hurValueMax = NEGATIVE_INFINITY;
 
 		for (positionTicTacToe move: predictedMoves ){
@@ -344,9 +338,9 @@ public class aiTicTacToe {
 			board.get(index).state = player;
 			List<positionTicTacToe> copied = deepCopyATicTacToeBoard(board);
 //			int curValue = miniMaxEach(copied, 3, false );
-			int curValue = alphaBeta(copied, 3, alpha, beta, false);
+			int curValue = alphaBeta(copied, DEPTH, alpha, beta, false);
 			curValue = curValue > NEGATIVE_INFINITY ? curValue : NEGATIVE_INFINITY;
-			if (curValue > hurValueMax){
+			if (curValue >= hurValueMax){
 				hurValueMax = curValue;
 				myNextMove = move;
 			}
@@ -357,6 +351,8 @@ public class aiTicTacToe {
 			}
 			board.get(index).state = 0;
 		}
+		long end = System.currentTimeMillis();
+		System.out.println("this step takes: "+ (end - start)/1000.0 + "s");
 		return myNextMove;
 	}
 
